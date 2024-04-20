@@ -24,17 +24,19 @@ class AresLidar:
         self.rx_storage = bytearray(LIDAR_FRAME_SIZE * 2)
         self.measure = [[0, 0] for _ in range(LIDAR_MODULE_NUMBER)]
 
+
+def speedUpdate(min_distance):
+    if min_distance <= 310:
+        return 0
+    else:
+        return 1-exp(-(min_distance-310)/25)
+    
 # Function to retrieve LidarDistance data
 def get_lidar_data(lidar):
     reading_head = 0
     wait_for_head_cmp = 0
     wait_for_fill = 0
 
-def speedUpdate(min_distance):
-    if min_distance <= 310:
-        return 0
-    else:
-        return 1-exp(-(min_distance-310)/22)
 
     while reading_head < len(lidar.rx_storage):
         reading_head_limit = len(lidar.rx_storage) if reading_head < LIDAR_FRAME_SIZE else LIDAR_FRAME_SIZE
