@@ -24,7 +24,7 @@ Pour tester le serveur et le client, il faut lancer les commandes suivantes dans
 ros2 run start_robot client
 ```
 ```
-ros2 run start_robot server
+ros2 run start_robot service
 ```
 
 ### Troubleshooting
