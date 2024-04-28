@@ -8,7 +8,6 @@
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
-  <depend>example_interfaces</depend>
   <depend>pyserial</depend>
   <depend>time</depend>
   <depend>RPi.GPIO</depend>
@@ -20,6 +19,5 @@
 
   <export>
     <build_type>ament_python</build_type>
-    <exec_depend>tutorial_interfaces</exec_depend>
   </export>
 </package>
