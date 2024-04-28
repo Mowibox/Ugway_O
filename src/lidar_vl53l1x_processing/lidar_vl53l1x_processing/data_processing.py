@@ -1,4 +1,5 @@
 import rclpy
+from numpy import exp
 from rclpy.node import Node
 from std_msgs.msg import Int32, String, Bool, Float64
 
@@ -23,11 +24,19 @@ class AresLidar:
         self.rx_storage = bytearray(LIDAR_FRAME_SIZE * 2)
         self.measure = [[0, 0] for _ in range(LIDAR_MODULE_NUMBER)]
 
+
+def speedUpdate(min_distance):
+    if 20 <= min_distance <= 310:
+        return 0
+    else:
+        return 1-exp(-(min_distance-310)/25)
+    
 # Function to retrieve LidarDistance data
 def get_lidar_data(lidar):
     reading_head = 0
     wait_for_head_cmp = 0
     wait_for_fill = 0
+
 
     while reading_head < len(lidar.rx_storage):
         reading_head_limit = len(lidar.rx_storage) if reading_head < LIDAR_FRAME_SIZE else LIDAR_FRAME_SIZE
@@ -102,17 +111,9 @@ class LidarNode(Node):
         distances = [distance[1] for distance in processed_data.measure]
         min_distance = min(distances)
 
-        # Distance threshold
-        stop_threshold = 450
-
         robotSpeed = Float64()
         
-        # The '20' condition is to prevent data jumps
-        if 20 <= min_distance <= stop_threshold:
-            robotSpeed.data = 0.0
-
-        else:
-            robotSpeed.data = 1.0
+        robotSpeed.data = speedUpdate(min_distance)
                 
         # Actually unused but may be useful
         # For knowing if the obstacle is in front of the robot or behind
@@ -128,7 +129,7 @@ class LidarNode(Node):
         # Display the distance table if uncommented
         # self.get_logger().info("%s" % str(distances))
 
-        #self.get_logger().info("Minimal distance: %d, Information : %s" % (min_distance, msg.data))
+        #self.get_logger().info("Minimal distance: %d, Information : %s" % (min_distance, robotSpeed.data))
 
 def main(args=None):
     rclpy.init(args=args)
